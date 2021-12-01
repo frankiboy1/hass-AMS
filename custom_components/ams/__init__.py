@@ -145,14 +145,14 @@ class AmsHub:
     def read_bytes(self):
         """Read the raw data from serial port."""
         byte_counter = 0
-        bytelist = []
+        queue = []
         while self._running:
-            buf = self._ser.read()
+            buf = self._ser.read(self._ser.inWaiting() or 1)
 
             if buf:
-                bytelist.extend(buf)
-                if buf == FRAME_FLAG and byte_counter > 1:
-                    return bytelist
+                queue.extend(buf)
+                if buf == FRAME_FLAG and byte_counter > 2:
+                    return queue
                 byte_counter = byte_counter + 1
             else:
                 continue

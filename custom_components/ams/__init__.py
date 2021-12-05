@@ -144,16 +144,29 @@ class AmsHub:
 
     def read_bytes(self):
         """Read the raw data from serial port."""
-        byte_counter = 0
+        frame_counter = 0
         queue = []
         while self._running:
             buf = self._ser.read(self._ser.inWaiting() or 1)
 
             if buf:
-                queue.extend(buf)
-                if buf == FRAME_FLAG and byte_counter > 2:
+                if buf == FRAME_FLAG and frame_counter == 0:
+                    _LOGGER.warning("Found first FRAME_FLAG")
+                    queue.extend(buf)
+                    frame_counter += 1
+                if buf == FRAME_FLAG and frame_counter == 1:
+                    _LOGGER.warning("We got a second FRAME_FLAG after "
+                                    "first. Skip.")
+                    continue
+                if buf == FRAME_FLAG and frame_counter > 10:
+                    queue.extend(buf)
+                    _LOGGER.warning("Last FRAME_FLAG detected, return queue "
+                                    "for decoding= %s", queue)
                     return queue
-                byte_counter = byte_counter + 1
+                if frame_counter > 0:
+                    _LOGGER.warning("Adding data to frame")
+                    queue.extend(buf)
+                    frame_counter += 1
             else:
                 continue
 

@@ -60,10 +60,10 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     ): vol.In(MANUFACTURER_OPTIONS),
                     vol.Optional(
                         CONF_PARITY, default=DEFAULT_PARITY
-                    ): vol.All(str),
+                    ): vol.In(["N", "E", "O"]),
                     vol.Optional(
                         CONF_BAUDRATE, default=DEFAULT_BAUDRATE
-                    ): vol.All(int),
+                    ): int,
                 }
             ),
             description_placeholders={

@@ -272,8 +272,9 @@ def test_valid_data(data):
         return False
 
     if len(data) > 581 or len(data) < 44:
-        _LOGGER.debug("Invalid packet size %s", len(data))
-        return False
+        _LOGGER.debug("Invalid packet size %s Try to decode anyway. DUMP: %s",
+                      len(data), data)
+        return True
 
     if not data[0] and data[-1] == FRAME_FLAG:
         _LOGGER.debug(
@@ -288,15 +289,17 @@ def test_valid_data(data):
     read_header_checksum = data[8] << 8 | data[7]
 
     if header_checksum != read_header_checksum:
-        _LOGGER.debug("Invalid header CRC check")
-        return False
+        _LOGGER.debug("Invalid header CRC check. Try to decode anyway. DUMP:"
+                      " %s", data)
+        return True
 
     frame_checksum = CrcX25.calc(bytes(data[1:-3]))
     read_frame_checksum = data[-2] << 8 | data[-3]
 
     if frame_checksum != read_frame_checksum:
-        _LOGGER.debug("Invalid frame CRC check")
-        return False
+        _LOGGER.debug("Invalid frame CRC check. Try to decode anyway. DUMP: "
+                      "%s", data)
+        return True
 
     if data[9:13] != DATA_FLAG:
         _LOGGER.debug("Data does not start with %s: %s", DATA_FLAG,

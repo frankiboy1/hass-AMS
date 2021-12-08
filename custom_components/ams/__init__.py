@@ -151,20 +151,15 @@ class AmsHub:
 
             if buf:
                 if buf == FRAME_FLAG and frame_counter == 0:
-                    _LOGGER.warning("Found first FRAME_FLAG")
-                    queue.extend(buf)
                     frame_counter += 1
                 if buf == FRAME_FLAG and frame_counter == 1:
-                    _LOGGER.warning("We got a second FRAME_FLAG after "
-                                    "first. Skip.")
                     continue
                 if buf == FRAME_FLAG and frame_counter > 10:
                     queue.extend(buf)
-                    _LOGGER.warning("Last FRAME_FLAG detected, return queue "
-                                    "for decoding= %s", queue)
+                    _LOGGER.debug("Last FRAME_FLAG detected, return "
+                                  "queue for decoding= %s", queue)
                     return queue
                 if frame_counter > 0:
-                    _LOGGER.warning("Adding data to frame")
                     queue.extend(buf)
                     frame_counter += 1
             else:
@@ -220,7 +215,8 @@ class AmsHub:
                     _LOGGER.debug("failed package: %s", data)
                 if detect_pkg:
                     detect_pkg = None
-            except serial.serialutil.SerialException:
+            except Exception as error:
+                _LOGGER.warning("Something went wrong: %s", error.__class__)
                 pass
 
     @classmethod

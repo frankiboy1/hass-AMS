@@ -101,3 +101,125 @@ Enjoy
 Latest information about OBIS for all the norwegian meters: https://www.nek.no/info-ams-han-utviklere/
 
 Latest information about swedish standard for AMS: https://www.energiforetagen.se/globalassets/energiforetagen/det-erbjuder-vi/kurser-och-konferenser/elnat/branschrekommendation-lokalt-granssnitt-v2_0-201912.pdf
+
+Content of the raw data packages (Kamstrup example, collected info from 
+various web sites and documents):
+```
+Header:
+
+7E          <-- Frame start flag
+A           <-- 4 bits, A = 0b1010 = frame format type 3
+0E2         <-- 1 bit, segmentation bit + 11 bits, frame length sub-field, 0xE2 = 226 bytes (excluding opening and closing frame flags)
+2B          <-- Destination address, 1 bit, 0b1 = unicast + 6 bit, node address, 0b010101 = 21 + 1 bit, address size, 0b1 = 1 byte
+21          <-- Source address, 1 bit, 0b1 = unicast + 6bit, node address, 0b010000 = 16 + 1 bit, address size, 0b1 = 1 byte
+13          <-- Control field
+23 9A       <-- Header check sequence (HCS) field, CRC-16/X-25 (Reverse order)
+
+
+Information:
+
+E6                  <-- Destination LSAP
+E7                  <-- Source LSAP, LSB = 0b1 = command
+00                  <-- LLC Quality
+0F                  <-- LLC Service Data Unit
+00 00 00 00         <-- "Long-Invoke-Id-And-Priority"?
+0C                  <-- string length?, 0C = 12
+   07 E3            <-- Full year, 0x07E3 = 2019
+   06               <-- Month, June
+   13               <-- Day of month, 0x12 = 19
+   02               <-- Day of week, Friday
+   15               <-- Hour of day, 0x14 = 21
+   2E               <-- Minute of hour, 0x2F = 46
+   32               <-- Second of minute, 0x32 = 50
+   FF               <-- Hundredths of second, 0xFF = not specified
+   80 00            <-- Deviation (offset from UTC), 0x8000 = not specified
+   80               <-- Clock status, 0x80 = 0b10000000, MSB 1 = summer time
+   
+02                                                        <-- struct
+   19                                                     <-- 0x19 = 25 elements
+
+0A                                                        <-- visible-string
+   0E                                                     <-- string length 0x0E = 14 bytes
+       4B 61 6D 73 74 72 75 70 5F 56 30 30 30 31          <-- OBIS List Version Identifier, Kamstrup_V0001
+
+09                                                        <-- octet-string
+   06                                                     <-- string length, 0x06 = 6 bytes
+      01 01 00 00 05 FF                                   <-- OBIS for Meter ID, 1.1.0.0.5.255
+0A                                                        <-- visible-string
+   10                                                     <-- string length, 10 = 16 bytes  
+       31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 36    <-- Meter ID, fake
+
+09                                                        <-- octet-string
+   06                                                     <-- string length, 0x06 = 6 bytes
+      01 01 60 01 01 FF                                   <-- OBIS for meter type, 1.1.96.1.1.255
+0A                                                        <-- visible-string
+   12                                                     <-- string lenth, 0x12 = 18 bytes
+   36 38 34 31 31 33 31 42 4E 32 34 33 31 30 31 30 34 30  <-- Meter type, 6841131BN243101040)
+
+09                          <-- octet-string
+   06                       <-- string length, 0x06 = 6 bytes
+      01 01 01 07 00 FF     <-- OBIS for Active Power +, 1.1.1.7.0.255
+06                          <-- unsigned, 4 bytes
+   00 00 06 A7              <-- 0x06A7 = 1703 Watts
+
+09                          <-- octet-string
+   06                       <-- string length, 0x06 = 6 bytes
+      01 01 02 07 00 FF     <-- OBIS for Active Power -, 1.1.2.7.0.255
+06                          <-- unsigned, 4 bytes
+    00 00 00 00             <-- 0 Watt
+    
+09                          <-- octet-string
+   06                       <-- string length, 0x06 = 6 bytes
+      01 01 03 07 00 FF     <-- OBIS for Reactive Power +, 1.1.3.7.0.255
+06                          <-- unsigned, 4 bytes
+    00 00 00 00             <-- 0 Watt
+
+09                          <-- octet-string
+   06                       <-- string length, 0x06 = 6 bytes
+      01 01 04 07 00 FF     <-- OBIS for Reactive Power -, 1.1.4.7.0.255
+06                          <-- unsigned, 4 bytes
+   00 00 01 E0              <-- 0x01E0 = 480 Watts
+
+09                          <-- octet-string
+   06                       <-- string length, 0x06 = 6 bytes
+      01 01 1F 07 00 FF     <-- OBIS for L1 Current, 1.1.31.7.0.255
+06                          <-- unsigned, 4 bytes
+   00 00 00 88              <-- 1.36 Ampere
+
+09                          <-- octet-string
+   06                       <-- string length, 0x06 = 6 bytes
+      01 01 33 07 00 FF     <-- OBIS for L2 Current, 1.1.51.7.0.255
+06                          <-- unsigned, 4 bytes
+   00 00 02 36              <-- 5.66 Ampere
+
+09                          <-- octet-string
+   06                       <-- string length, 0x06 = 6 bytes
+      01 01 47 07 00 FF     <-- OBIS for L3 Current, 1.1.71.7.0.255
+06                          <-- unsigned, 4 bytes
+   00 00 00 6D              <-- 1.09 Ampere
+   
+09                          <-- octet-string
+   06                       <-- string length, 0x06 = 6 bytes
+      01 01 20 07 00 FF     <-- OBIS for L1 Voltage, 1.1.32.7.0.255
+12                          <-- unsigned, 2 bytes
+   00 EB                    <-- 235 Volt
+
+09                          <-- octet-string
+   06                       <-- string length, 0x06 = 6 bytes
+      01 01 34 07 00 FF     <-- OBIS for L2 Voltage, 1.1.52.7.0.255
+12                          <-- unsigned, 2 bytes
+   00 EB                    <-- 235 Volt
+
+09                          <-- octet-string
+   06                       <-- string length, 0x06 = 6 bytes
+      01 01 48 07 00 FF     <-- OBIS for L3 Voltage, 1.1.72.7.0.255
+12                          <-- unsigned, 2 bytes
+   00 EB                    <-- 235 Volt
+
+
+End:
+
+83 77                       <-- Frame check sequence (FCS) field, 
+                                CRC-16/X-25, (invalid) Reversed
+7E                          <-- Frame end flag
+```

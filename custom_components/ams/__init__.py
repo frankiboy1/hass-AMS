@@ -151,6 +151,7 @@ class AmsHub:
 
             if buf:
                 if buf == FRAME_FLAG and frame_counter == 0:
+                    queue.extend(buf)
                     frame_counter += 1
                 if buf == FRAME_FLAG and frame_counter == 1:
                     continue
